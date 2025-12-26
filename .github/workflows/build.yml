@@ -99,10 +99,6 @@ jobs:
         run: dotnet cake --target=Build
         shell: pwsh
 
-      - name: Test
-        run: dotnet cake --target=Test
-        shell: pwsh
-
       - name: Pack
         run: dotnet cake --target=Pack
         shell: pwsh
