@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		build.cake = build.cake
+		.github\workflows\build.yml = .github\workflows\build.yml
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
 		docfx.json = docfx.json
@@ -26,13 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE.txt = LICENSE.txt
 		nuget.config = nuget.config
 		README.md = README.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{5DBE970F-12BF-4C9C-BDDD-B7906DFFA02D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{D65FAA16-42A6-476E-B5FD-0B2AE185E4F2}"
-	ProjectSection(SolutionItems) = preProject
-		build.yml = build.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{5D20AA90-6969-D8BD-9DCD-8634F4692FDA}"
@@ -119,8 +113,6 @@ Global
 		{BE7CA0BA-6554-4E30-8E99-CBB457AB9149} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{AE9F9C8A-EC14-4561-BA56-331C5506E9A2} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{865F5F86-52A2-4808-BAF3-71E7A7E068FC} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
-		{5DBE970F-12BF-4C9C-BDDD-B7906DFFA02D} = {8ADC7C23-492F-45AA-A9CF-B8AAB17835C7}
-		{D65FAA16-42A6-476E-B5FD-0B2AE185E4F2} = {5DBE970F-12BF-4C9C-BDDD-B7906DFFA02D}
 		{78922D70-6360-4C4F-A83D-1D3157B5CF50} = {5D20AA90-6969-D8BD-9DCD-8634F4692FDA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
