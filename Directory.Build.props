@@ -11,6 +11,13 @@
     </PropertyGroup>
 
     <!-- =========================================================================
+       DISABLE PACKAGING - For Sample and Test projects
+       ========================================================================= -->
+    <PropertyGroup Condition="$(MSBuildProjectName.Contains('Sample')) OR $(MSBuildProjectName.Contains('Test'))">
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <!-- =========================================================================
        NUGET PACKAGE SETTINGS - Only for projects in /Src folder
        ========================================================================= -->
     <PropertyGroup Condition="$(MSBuildProjectDirectory.Contains('Src'))">
@@ -47,7 +54,7 @@
        ========================================================================= -->
     <ItemGroup Condition="$(MSBuildProjectDirectory.Contains('Src'))">
         <!-- Package icon -->
-        <None Include="$(MSBuildThisFileDirectory)assets/icon.png" Pack="true" PackagePath="\" Visible="false" />
+        <None Include="$(MSBuildThisFileDirectory)Assets/icon.png" Pack="true" PackagePath="\" Visible="false" />
         <!-- Package README - Uses root README.md for all packages -->
         <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Visible="false" />
         <!-- Source Link -->

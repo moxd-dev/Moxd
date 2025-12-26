@@ -41,12 +41,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{74785506-0
 		toc.yml = toc.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{E06BA2BD-65F2-40E1-A170-BCE74F62D3A5}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\Desktop\icon.png = ..\..\..\Desktop\icon.png
-		..\..\..\Desktop\logo.png = ..\..\..\Desktop\logo.png
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

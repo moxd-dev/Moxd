@@ -3,7 +3,7 @@ var configuration =
     HasArgument("Configuration") ? Argument<string>("Configuration") :
     EnvironmentVariable("Configuration", "Release");
 
-var artefactsDirectory = Directory("./Artefacts");
+var artifactsDirectory = Directory("./Artifacts");
 var binlogDirectory = Directory("./Binlog");
 var binlogPath = $"{binlogDirectory}/build.binlog";
 
@@ -11,7 +11,7 @@ Task("Clean")
     .Description("Cleans the artefacts, bin and obj directories.")
     .Does(() =>
     {
-        CleanDirectory(artefactsDirectory);
+        CleanDirectory(artifactsDirectory);
         CleanDirectory(binlogDirectory);
         DeleteDirectories(GetDirectories("**/bin"), new DeleteDirectorySettings() { Force = true, Recursive = true });
         DeleteDirectories(GetDirectories("**/obj"), new DeleteDirectorySettings() { Force = true, Recursive = true });
@@ -55,7 +55,7 @@ Task("Pack")
                 },
                 NoBuild = true,
                 NoRestore = true,
-                OutputDirectory = artefactsDirectory,
+                OutputDirectory = artifactsDirectory,
             });
     });
 
