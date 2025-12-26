@@ -1,0 +1,46 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "./",
+          "files": [
+            "Src/Moxd.Dispatch/Moxd.Dispatch.csproj",
+            "Src/Moxd.Core/Moxd.Core.csproj"
+          ]
+        }
+      ],
+      "dest": "api",
+      "properties": {
+        "TargetFramework": "net9.0"
+      }
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [ "*.yml" ],
+        "src": "api",
+        "dest": "api"
+      },
+      {
+        "files": [ "*.md", "toc.yml", "**/toc.yml", "**/*.md" ],
+        "src": "Docs"
+      }
+    ],
+    "resource": [
+      {
+        "files": [ "**/*" ],
+        "src": "Assets"
+      }
+    ],
+    "output": "_site",
+    "globalMetadata": {
+      "_appTitle": "Moxd Documentation",
+      "_appFooter": "© Moxd Development - All rights reserved",
+      "_enableSearch": true,
+      "_appLogoPath": "Assets/logo.png"
+    },
+    "template": [ "default", "modern" ]
+  }
+}

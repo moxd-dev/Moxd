@@ -1,0 +1,67 @@
+var target = Argument("Target", "Default");
+var configuration =
+    HasArgument("Configuration") ? Argument<string>("Configuration") :
+    EnvironmentVariable("Configuration", "Release");
+
+var artefactsDirectory = Directory("./Artefacts");
+var binlogDirectory = Directory("./Binlog");
+var binlogPath = $"{binlogDirectory}/build.binlog";
+
+Task("Clean")
+    .Description("Cleans the artefacts, bin and obj directories.")
+    .Does(() =>
+    {
+        CleanDirectory(artefactsDirectory);
+        CleanDirectory(binlogDirectory);
+        DeleteDirectories(GetDirectories("**/bin"), new DeleteDirectorySettings() { Force = true, Recursive = true });
+        DeleteDirectories(GetDirectories("**/obj"), new DeleteDirectorySettings() { Force = true, Recursive = true });
+    });
+
+Task("Restore")
+    .Description("Restores NuGet packages.")
+    .IsDependentOn("Clean")
+    .Does(() =>
+    {
+        DotNetRestore("Moxd.sln");
+    });
+
+Task("Build")
+    .Description("Builds the solution.")
+    .IsDependentOn("Restore")
+    .Does(() =>
+    {
+        var settings = new DotNetBuildSettings()
+                       {
+                           Configuration = configuration,
+                           NoRestore = true,
+                           MSBuildSettings = new DotNetMSBuildSettings().EnableBinaryLogger(binlogPath)
+                       };
+        DotNetBuild("Moxd.sln", settings);
+    });
+
+Task("Pack")
+    .Description("Creates NuGet packages and outputs them to the artefacts directory.")
+    .Does(() =>
+    {
+        DotNetPack(
+            "Moxd.sln",
+            new DotNetPackSettings()
+            {
+                Configuration = configuration,
+                IncludeSymbols = true,
+                MSBuildSettings = new DotNetMSBuildSettings()
+                {
+                    ContinuousIntegrationBuild = !BuildSystem.IsLocalBuild,
+                },
+                NoBuild = true,
+                NoRestore = true,
+                OutputDirectory = artefactsDirectory,
+            });
+    });
+
+Task("Default")
+    .Description("Cleans, restores NuGet packages, builds the solution, runs unit tests and then creates NuGet packages.")
+    .IsDependentOn("Build")
+    .IsDependentOn("Pack");
+
+RunTarget(target);

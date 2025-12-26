@@ -17,8 +17,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		build.cake = build.cake
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
+		docfx.json = docfx.json
+		dotnet-tools.json = dotnet-tools.json
+		global.json = global.json
 		LICENSE.txt = LICENSE.txt
 		nuget.config = nuget.config
 		README.md = README.md
@@ -36,6 +40,18 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moxd.Maui.Sample", "Samples\Moxd.Maui.Sample\Moxd.Maui.Sample.csproj", "{78922D70-6360-4C4F-A83D-1D3157B5CF50}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{74785506-0DD3-443C-ACE4-85A6CE6F8CDA}"
+	ProjectSection(SolutionItems) = preProject
+		dispatch.md = dispatch.md
+		index.md = index.md
+		getting-started.md = getting-started.md
+		toc.yml = toc.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{E06BA2BD-65F2-40E1-A170-BCE74F62D3A5}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Desktop\icon.png = ..\..\..\Desktop\icon.png
+		..\..\..\Desktop\logo.png = ..\..\..\Desktop\logo.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,8 @@
+- name: Home
+  href: index.md
+- name: Getting Started
+  href: getting-started.md
+- name: Moxd.Dispatch
+  href: dispatch.md
+- name: API Reference
+  href: api/

@@ -4,13 +4,22 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <!-- Source Link - Enables stepping into source code when debugging -->
+        <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+        <!-- MinVer - Auto-versioning from Git tags -->
+        <PackageVersion Include="MinVer" Version="6.0.0" />
+
         <!-- Testing -->
         <PackageVersion Include="coverlet.collector" Version="6.0.4" />
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
         <PackageVersion Include="xunit" Version="2.9.3" />
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+
+        <!-- MAUI Framework -->
+        <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         
-        <!-- MVVM (if you use it) -->
+        <!-- (MVVM and MAUI) Toolkit -->
         <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+        <PackageVersion Include="CommunityToolkit.Maui" Version="10.0.0" />
     </ItemGroup>
 </Project>
