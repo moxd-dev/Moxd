@@ -1,12 +1,13 @@
 {
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
   "metadata": [
     {
       "src": [
         {
           "src": "./",
           "files": [
-            "Src/Moxd.Dispatch/Moxd.Dispatch.csproj",
-            "Src/Moxd.Core/Moxd.Core.csproj"
+            "Src/Moxd.Maui.Core/Moxd.Maui.Core.csproj",
+            "Src/Moxd.Maui.Dispatch/Moxd.Maui.Dispatch.csproj"
           ]
         }
       ],
@@ -24,23 +25,24 @@
         "dest": "api"
       },
       {
-        "files": [ "*.md", "toc.yml", "**/toc.yml", "**/*.md" ],
+        "files": [ "*.md", "toc.yml" ],
         "src": "Docs"
       }
     ],
     "resource": [
       {
-        "files": [ "**/*" ],
-        "src": "Assets"
-      }
+        "files": [ "Assets/**" ],
+        "src": "Docs"
+      },
+      { "files": [ "Images/Banner.png" ] }
     ],
     "output": "_site",
     "globalMetadata": {
       "_appTitle": "Moxd Documentation",
       "_appFooter": "© Moxd Development - All rights reserved",
       "_enableSearch": true,
-      "_appLogoPath": "Assets/logo.png"
+      "_appLogoPath": "Images/Banner.png"
     },
-    "template": [ "default", "modern" ]
+    "template": [ "default", "modern", "Docs" ]
   }
 }

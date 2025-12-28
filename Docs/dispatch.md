@@ -1,4 +1,4 @@
-﻿# Moxd.Dispatch
+# Moxd.Dispatch
 
 **High-performance dispatcher for .NET MAUI with batched UI updates, priority queuing, and background processing.**
 

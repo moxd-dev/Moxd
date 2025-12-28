@@ -5,4 +5,4 @@
 - name: Moxd.Dispatch
   href: dispatch.md
 - name: API Reference
-  href: api/
+  href: ../api/Moxd.yml

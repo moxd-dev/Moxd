@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup Label="Package">
+        <Product>Moxd.Maui.Core</Product>
+        <Description>Shared utilities, base classes, and common extensions for Moxd .NET MAUI libraries.</Description>
+        <PackageTags>MAUI</PackageTags>
+        <RootNamespace>Moxd</RootNamespace>
+        <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <PropertyGroup Label="Build">
+        <TargetFrameworks>$(AllTargetFrameworks)</TargetFrameworks>
+
+        <SingleProject>true</SingleProject>
+        <OutputType>Library</OutputType>
+
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">12.2</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+        <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Maui.Controls" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Platforms\Android\" />
+        <Folder Include="Platforms\iOS\" />
+        <Folder Include="Platforms\MacCatalyst\" />
+        <Folder Include="Platforms\Windows\" />
+    </ItemGroup>
+</Project>

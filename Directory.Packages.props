@@ -4,22 +4,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- Source Link - Enables stepping into source code when debugging -->
         <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-        <!-- MinVer - Auto-versioning from Git tags -->
         <PackageVersion Include="MinVer" Version="6.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0"/>
 
         <!-- Testing -->
         <PackageVersion Include="coverlet.collector" Version="6.0.4" />
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
         <PackageVersion Include="xunit" Version="2.9.3" />
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+        <PackageVersion Include="FluentAssertions" Version="7.0.0" />
+        <PackageVersion Include="Moq" Version="4.20.72" />
 
-        <!-- MAUI Framework -->
-        <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-        
         <!-- (MVVM and MAUI) Toolkit -->
         <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageVersion Include="CommunityToolkit.Maui" Version="10.0.0" />
+        <PackageVersion Include="CommunityToolkit.Maui" Version="13.0.0" />
+
+        <!-- MAUI Framework -->
+        <PackageVersion Condition="$(TargetFramework.StartsWith('net9'))" Include="Microsoft.Maui.Controls" Version="$(MauiVersion9)" />
+        <PackageVersion Condition="$(TargetFramework.StartsWith('net10'))" Include="Microsoft.Maui.Controls" Version="$(MauiVersion10)" />
     </ItemGroup>
 </Project>
