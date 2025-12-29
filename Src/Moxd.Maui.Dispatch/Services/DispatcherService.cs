@@ -20,12 +20,15 @@ public sealed class DispatcherService(IMainThreadService mainThread) : IDispatch
     private readonly AsyncLocal<BatchScope?> _currentBatch = new();
     #endregion
 
+    #region Properties
     /// <inheritdoc />
     public bool IsMainThread => _mainThread.IsMainThread;
 
     /// <inheritdoc />
     public bool IsBatching => _currentBatch.Value?.IsActive == true;
+    #endregion
 
+    #region Public Methods
     /// <inheritdoc />
     public void Dispatch(Action action, DispatchPriority priority = DispatchPriority.Normal)
     {
@@ -214,26 +217,11 @@ public sealed class DispatcherService(IMainThreadService mainThread) : IDispatch
     /// <inheritdoc />
     public IBatchScope Batch()
     {
-        BatchScope scope = new(ExecuteBatch);
+        BatchScope scope = new BatchScope(
+             executeActions: ExecuteBatchActions,
+             onDispose: ClearCurrentBatch);
         _currentBatch.Value = scope;
         return scope;
-    }
-
-    private void ExecuteBatch(List<Action> actions)
-    {
-        if (actions.Count == 0)
-            return;
-
-        _mainThread.InvokeOnMainThread(() =>
-        {
-            foreach (var action in actions)
-            {
-                action();
-            }
-        });
-
-        // Clear the current batch when done
-        _currentBatch.Value = null;
     }
 
     /// <inheritdoc />
@@ -245,4 +233,28 @@ public sealed class DispatcherService(IMainThreadService mainThread) : IDispatch
         await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
         await _mainThread.InvokeOnMainThreadAsync(action, cancellationToken).ConfigureAwait(false);
     }
+    #endregion
+
+    #region Private Methods
+    private void ExecuteBatchActions(List<Action> actions)
+    {
+        if (actions.Count == 0)
+        {
+            return;
+        }
+
+        _mainThread.InvokeOnMainThread(() =>
+        {
+            foreach (var action in actions)
+            {
+                action();
+            }
+        });
+    }
+
+    private void ClearCurrentBatch()
+    {
+        _currentBatch.Value = null;
+    }
+    #endregion
 }
