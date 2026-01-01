@@ -195,4 +195,113 @@ public static class TaskExtensions
             onError(ex);
         }
     }
+
+    /// <summary>
+    /// Runs work on a background thread, then executes a UI action on the main thread with the result.
+    /// This is the recommended pattern for loading data and updating the UI.
+    /// </summary>
+    /// <typeparam name="T">The result type.</typeparam>
+    /// <param name="backgroundWork">The async work to run on the background thread.</param>
+    /// <param name="uiWork">The action to run on the UI thread with the result.</param>
+    /// <param name="cancellationToken">Optional cancellation token.</param>
+    /// <example>
+    /// <code>
+    /// await TaskExtensions.RunAsync(
+    ///     async () => await _database.GetOrdersAsync(),
+    ///     orders => Orders.Load(orders));
+    /// </code>
+    /// </example>
+    public static async Task RunAsync<T>(Func<Task<T>> backgroundWork, Action<T> uiWork, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(backgroundWork);
+        ArgumentNullException.ThrowIfNull(uiWork);
+
+        T result = await Task.Run(backgroundWork, cancellationToken).ConfigureAwait(false);
+
+        if (MainThread.IsMainThread)
+        {
+            uiWork(result);
+        }
+        else
+        {
+            MainThread.BeginInvokeOnMainThread(() => uiWork(result));
+        }
+    }
+
+    /// <summary>
+    /// Runs synchronous work on a background thread, then executes a UI action on the main thread.
+    /// </summary>
+    /// <typeparam name="T">The result type.</typeparam>
+    /// <param name="backgroundWork">The synchronous work to run on the background thread.</param>
+    /// <param name="uiWork">The action to run on the UI thread with the result.</param>
+    /// <param name="cancellationToken">Optional cancellation token.</param>
+    /// <example>
+    /// <code>
+    /// await TaskExtensions.RunAsync(
+    ///     () => ComputeExpensiveCalculation(),
+    ///     result => ResultLabel.Text = result.ToString());
+    /// </code>
+    /// </example>
+    public static async Task RunAsync<T>(Func<T> backgroundWork, Action<T> uiWork, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(backgroundWork);
+        ArgumentNullException.ThrowIfNull(uiWork);
+
+        T result = await Task.Run(backgroundWork, cancellationToken).ConfigureAwait(false);
+
+        if (MainThread.IsMainThread)
+        {
+            uiWork(result);
+        }
+        else
+        {
+            MainThread.BeginInvokeOnMainThread(() => uiWork(result));
+        }
+    }
+
+    /// <summary>
+    /// Runs async work on a background thread, then executes an action on the UI thread.
+    /// </summary>
+    /// <param name="backgroundWork">The async work to run on the background thread.</param>
+    /// <param name="uiWork">The action to run on the UI thread.</param>
+    /// <param name="cancellationToken">Optional cancellation token.</param>
+    public static async Task RunAsync(Func<Task> backgroundWork, Action uiWork, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(backgroundWork);
+        ArgumentNullException.ThrowIfNull(uiWork);
+
+        await Task.Run(backgroundWork, cancellationToken).ConfigureAwait(false);
+
+        if (MainThread.IsMainThread)
+        {
+            uiWork();
+        }
+        else
+        {
+            MainThread.BeginInvokeOnMainThread(uiWork);
+        }
+    }
+
+    /// <summary>
+    /// Runs synchronous work on a background thread, then executes an action on the UI thread.
+    /// </summary>
+    /// <param name="backgroundWork">The synchronous work to run on the background thread.</param>
+    /// <param name="uiWork">The action to run on the UI thread.</param>
+    /// <param name="cancellationToken">Optional cancellation token.</param>
+    public static async Task RunAsync(Action backgroundWork, Action uiWork, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(backgroundWork);
+        ArgumentNullException.ThrowIfNull(uiWork);
+
+        await Task.Run(backgroundWork, cancellationToken).ConfigureAwait(false);
+
+        if (MainThread.IsMainThread)
+        {
+            uiWork();
+        }
+        else
+        {
+            MainThread.BeginInvokeOnMainThread(uiWork);
+        }
+    }
 }

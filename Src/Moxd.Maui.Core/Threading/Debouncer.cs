@@ -1,4 +1,4 @@
-﻿namespace Moxd.Utilities;
+﻿namespace Moxd.Threading;
 
 /// <summary>
 /// Debounces rapid calls to an action, executing only after a period of inactivity.

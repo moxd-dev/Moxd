@@ -1,10 +1,33 @@
-# Moxd Documentation
+# Moxd Development
 
-**High-performance .NET MAUI libraries for building production-grade applications.**
+<p align="center">
+  <img src="./Assets/Logo.png" alt="Moxd Logo" width="200"/>
+</p>
 
-[![NuGet](https://img.shields.io/nuget/v/Moxd.Dispatch.svg)](https://www.nuget.org/packages/Moxd.Dispatch/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build](https://github.com/moxd-dev/Moxd/actions/workflows/build.yml/badge.svg)](https://github.com/moxd-dev/Moxd/actions/workflows/build.yml)
+<p align="center">
+  <strong>High-quality .NET MAUI libraries for building exceptional cross-platform applications</strong>
+</p>
+
+<p align="center">
+  <a href="#packages">Packages</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#documentation">Documentation</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#license">License</a>
+</p>
+
+---
+
+## About Moxd Development
+
+Moxd Development provides production-ready libraries, controls, and utilities for .NET MAUI developers. Our goal is to solve common pain points in cross-platform development with clean, performant, and well-documented solutions.
+
+### What We Offer
+
+- **Performance Utilities** — Thread-safe collections, async helpers, and optimized data handling
+- **UI Controls** — Custom layouts, controls, and behaviors for MAUI applications
+- **Platform Extensions** — Platform-specific functionality made easy
+- **Best Practices** — Clean architecture patterns and reusable components
 
 ---
 
@@ -12,54 +35,69 @@
 
 | Package | Description | NuGet |
 |---------|-------------|-------|
-| [Moxd.Dispatch](dispatch/index.md) | High-performance dispatcher with batched UI updates | [![NuGet](https://img.shields.io/nuget/v/Moxd.Dispatch.svg)](https://www.nuget.org/packages/Moxd.Dispatch/) |
-| Moxd.Core | Shared utilities | *Coming soon* |
+| **Moxd.Maui.Core** | Essential utilities: reactive collections, threading primitives, guards, and extensions | [![NuGet](https://img.shields.io/nuget/v/Moxd.Maui.Core.svg)](https://www.nuget.org/packages/Moxd.Maui.Core) |
+
+*More packages coming soon!*
 
 ---
 
-## Quick Start
+## Getting Started
 
 ### Installation
 
 ```bash
-dotnet add package Moxd.Dispatch
+dotnet add package Moxd.Maui.Core
 ```
 
-### Setup
+### Quick Example
 
 ```csharp
-// MauiProgram.cs
-var builder = MauiApp.CreateBuilder();
-builder
-    .UseMauiApp<App>()
-    .UseMoxdDispatch();
-```
+using Moxd.Collections;
 
-### Usage
-
-```csharp
-// Batch thousands of property changes into a single UI dispatch
-using (dispatcher.Batch())
+public class ProductsViewModel
 {
-    foreach (var item in items)
+    public ReactiveCollection<Product> Products { get; } = new();
+
+    public async Task LoadAsync()
     {
-        item.Name = newName;
-        item.Score = newScore;
+        var items = await _service.GetProductsAsync();
+        Products.Load(items);
     }
+
+    public void Search(string text) => Products.Filter(p => p.Name.Contains(text));
+    public void SortByPrice() => Products.Sort(p => p.Price);
 }
 ```
 
 ---
 
-## Links
+## Documentation
 
-- [GitHub Repository](https://github.com/moxd-dev/Moxd)
-- [NuGet Packages](https://www.nuget.org/profiles/moxd-dev)
-- [Release Notes](https://github.com/moxd-dev/Moxd/releases)
-- [API Reference](api/index.md)
+Detailed documentation for each package:
+
+- [**Moxd.Maui.Core**](docs/Core.md) — Collections, threading, guards, and extensions
+
+---
+
+## Requirements
+
+- .NET 9.0 or later
+- .NET MAUI workload
+
+---
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 ---
 
 ## License
 
-MIT License - see [LICENSE](https://github.com/moxd-dev/Moxd/blob/master/LICENSE) for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/moxd-development">Moxd Development</a>
+</p>

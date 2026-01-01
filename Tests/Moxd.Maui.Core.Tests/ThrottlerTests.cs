@@ -1,4 +1,4 @@
-﻿using Moxd.Utilities;
+﻿using Moxd.Threading;
 using System.Diagnostics;
 using FluentAssertions;
 using Xunit.Abstractions;

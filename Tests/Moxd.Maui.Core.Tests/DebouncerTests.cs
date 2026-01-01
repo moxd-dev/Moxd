@@ -1,6 +1,6 @@
-﻿using Moxd.Utilities;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using FluentAssertions;
+using Moxd.Threading;
 using Xunit.Abstractions;
 
 namespace Moxd.Maui.Core.Tests;

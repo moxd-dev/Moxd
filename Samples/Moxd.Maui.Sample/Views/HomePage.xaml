@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Moxd.Maui.Sample.ViewModels"
+             x:Class="Moxd.Maui.Sample.Views.HomePage"
+             x:DataType="viewModels:HomeViewModel"
+             x:Name="Root"
+             Title="Home">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+            <!--  Header  -->
+            <Label Text="Moxd.Maui"
+                   FontSize="32"
+                   HorizontalOptions="Center" />
+
+            <Label Text="High-Performance Libraries for .NET MAUI"
+                   FontSize="16"
+                   TextColor="{AppThemeBinding Light=Gray,
+                                               Dark=LightGray}"
+                   HorizontalOptions="Center" />
+
+            <!--  Description  -->
+            <Border Padding="20">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Welcome to the Moxd.Maui Sample App!"
+                           FontSize="18"
+                           FontAttributes="Bold" />
+
+                    <Label Text="This app demonstrates the performance benefits of the Moxd.Maui libraries. Explore the demos to see side-by-side comparisons of optimized vs. standard approaches."
+                           FontSize="14"
+                           LineBreakMode="WordWrap" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!--  Demo Cards  -->
+            <Label Text="Explore Demos"
+                   FontSize="20"
+                   TextColor="{AppThemeBinding Light=Gray,
+                                               Dark=LightGray}" />
+
+            <!--  Collection Demo Card  -->
+            <Border Padding="20">
+                <Grid ColumnDefinitions="*, Auto"
+                      RowDefinitions="Auto, Auto, Auto">
+                    <Label Text="📦 Collection Demo"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           Grid.Column="0" />
+
+                    <Label Text="Compare collection performance"
+                           FontSize="18"
+                           Grid.Row="1"
+                           Grid.Column="0"
+                           TextColor="{AppThemeBinding Light=Gray,
+                                                       Dark=LightGray}" />
+
+                    <Label Text="10,000x fewer notifications!"
+                           Grid.Row="2"
+                           Grid.Column="0"
+                           FontSize="14"
+                           TextColor="{StaticResource Secondary}" />
+
+                    <Button Text="Open"
+                            Grid.RowSpan="3"
+                            Grid.Column="1"
+                            Command="{Binding NavigateToCollectionDemoCommand}"
+                            VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <!--  Utilities Demo Card  -->
+            <Border Padding="20">
+                <Grid ColumnDefinitions="*, Auto"
+                      RowDefinitions="Auto, Auto, Auto">
+                    <Label Text="🛠️ Utilities Demo"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           Grid.Column="0" />
+
+                    <Label Text="Debouncer, Throttler, TaskExtensions"
+                           FontSize="18"
+                           Grid.Row="1"
+                           Grid.Column="0"
+                           TextColor="{AppThemeBinding Light=Gray,
+                                                       Dark=LightGray}" />
+
+                    <Label Text="Essential async utilities"
+                           Grid.Row="2"
+                           Grid.Column="0"
+                           FontSize="14"
+                           TextColor="{StaticResource Secondary}" />
+
+                    <Button Text="Open"
+                            Grid.RowSpan="3"
+                            Grid.Column="1"
+                            Command="{Binding NavigateToUtilitiesDemoCommand}"
+                            VerticalOptions="Center" />
+                </Grid>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

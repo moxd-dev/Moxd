@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using FluentAssertions;
 using Xunit.Abstractions;
+using TaskExtensions = Moxd.Extensions.TaskExtensions;
 
 namespace Moxd.Maui.Core.Tests;
 
@@ -350,5 +351,119 @@ public class TaskExtensionsTests(ITestOutputHelper output) : TestBase(output)
 
         exceptionCount.Should().BeGreaterThan(0);
         LogSuccess("Exception handling works correctly under load");
+    }
+
+    [Fact]
+    public async Task RunAsync_WithAsyncBackgroundWork_ExecutesAndReturnsResult()
+    {
+        // Arrange
+        int result = 0;
+
+        // Act
+        await TaskExtensions.RunAsync(async () =>
+        {
+            await Task.Delay(10);
+            return 42;
+        },
+        value => result = value);
+
+        // Assert
+        result.Should().Be(42);
+        LogSuccess("RunAsync with async background work completed");
+    }
+
+    [Fact]
+    public async Task RunAsync_WithSyncBackgroundWork_ExecutesAndReturnsResult()
+    {
+        // Arrange
+        string result = "";
+
+        // Act
+        await TaskExtensions.RunAsync(
+            () => "Hello World",
+            value => result = value);
+
+        // Assert
+        result.Should().Be("Hello World");
+        LogSuccess("RunAsync with sync background work completed");
+    }
+
+    [Fact]
+    public async Task RunAsync_VoidVersion_ExecutesBackgroundThenUI()
+    {
+        // Arrange
+        bool backgroundExecuted = false;
+        bool uiExecuted = false;
+
+        // Act
+        await TaskExtensions.RunAsync(
+            async () =>
+            {
+                await Task.Delay(10);
+                backgroundExecuted = true;
+            },
+            () => uiExecuted = true);
+
+        // Assert
+        backgroundExecuted.Should().BeTrue();
+        uiExecuted.Should().BeTrue();
+        LogSuccess("RunAsync void version completed both phases");
+    }
+
+    [Fact]
+    public async Task RunAsync_SyncVoidVersion_ExecutesBackgroundThenUI()
+    {
+        // Arrange
+        bool backgroundExecuted = false;
+        bool uiExecuted = false;
+
+        // Act
+        await TaskExtensions.RunAsync(
+            () => backgroundExecuted = true,
+            () => uiExecuted = true);
+
+        // Assert
+        backgroundExecuted.Should().BeTrue();
+        uiExecuted.Should().BeTrue();
+        LogSuccess("RunAsync sync void version completed both phases");
+    }
+
+    [Fact]
+    public async Task RunAsync_WithCancellation_ThrowsOperationCanceledException()
+    {
+        // Arrange
+        using CancellationTokenSource cts = new();
+        cts.Cancel();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<OperationCanceledException>(async () => 
+            await TaskExtensions.RunAsync<int>(async () =>
+            {
+                await Task.Delay(100, cts.Token);
+                return 42;
+            }, _ => { },
+        cts.Token));
+
+        LogSuccess("RunAsync properly throws on cancellation");
+    }
+
+    [Fact]
+    public async Task RunAsync_NullBackgroundWork_ThrowsArgumentNullException()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => 
+            await TaskExtensions.RunAsync(null!, () => { }));
+
+        LogSuccess("RunAsync throws on null background work");
+    }
+
+    [Fact]
+    public async Task RunAsync_NullUIWork_ThrowsArgumentNullException()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => 
+            await TaskExtensions.RunAsync(() => 42, null!));
+
+        LogSuccess("RunAsync throws on null UI work");
     }
 }

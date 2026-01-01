@@ -1,6 +1,5 @@
 ﻿using Moxd.Services;
 using Moxd.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Moxd;

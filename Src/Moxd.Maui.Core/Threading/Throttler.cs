@@ -1,4 +1,4 @@
-﻿namespace Moxd.Utilities;
+﻿namespace Moxd.Threading;
 
 /// <summary>
 /// Throttles calls to an action, ensuring it executes at most once per time interval.
