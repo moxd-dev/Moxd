@@ -6,8 +6,7 @@
         {
           "src": "./",
           "files": [
-            "Src/Moxd.Maui.Core/Moxd.Maui.Core.csproj",
-            "Src/Moxd.Maui.Dispatch/Moxd.Maui.Dispatch.csproj"
+            "Src/Moxd.Maui.Core/Moxd.Maui.Core.csproj"
           ]
         }
       ],
