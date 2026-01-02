@@ -11,9 +11,7 @@
 <p align="center">
   <a href="#packages">Packages</a> •
   <a href="#getting-started">Getting Started</a> •
-  <a href="#documentation">Documentation</a> •
-  <a href="#contributing">Contributing</a> •
-  <a href="#license">License</a>
+  <a href="#documentation">Documentation</a>
 </p>
 
 ---
@@ -75,7 +73,7 @@ public class ProductsViewModel
 
 Detailed documentation for each package:
 
-- [**Moxd.Maui.Core**](docs/Core.md) — Collections, threading, guards, and extensions
+- [**Moxd.Maui.Core**](/core.md) — Collections, threading, guards, and extensions
 
 ---
 
@@ -84,20 +82,6 @@ Detailed documentation for each package:
 - .NET 9.0 or later
 - .NET MAUI workload
 
----
-
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
 <p align="center">
-  Made with ❤️ by <a href="https://github.com/moxd-development">Moxd Development</a>
+  Made with ❤️ by <a href="https://github.com/moxd-dev/Moxd">Moxd Development</a>
 </p>
