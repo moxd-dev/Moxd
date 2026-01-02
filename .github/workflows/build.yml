@@ -90,11 +90,15 @@ jobs:
       - name: Restore .NET tools
         run: dotnet tool restore
 
-      - name: Build
+      - name: Cake Build
         run: dotnet cake --target=Build
         shell: pwsh
 
-      - name: Pack
+      - name: Cake Test
+        run: dotnet cake --target=Test
+        shell: pwsh
+
+      - name: Cake Pack
         run: dotnet cake --target=Pack
         shell: pwsh
 
