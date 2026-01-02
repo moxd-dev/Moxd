@@ -1,0 +1,9 @@
+﻿{
+  "solution": {
+    "path": "Moxd.sln",
+    "projects": [
+      "Src\\Moxd.Maui.Core\\Moxd.Maui.Core.csproj",
+      "Tests\\Moxd.Maui.Core.Tests\\Moxd.Maui.Core.Tests.csproj"
+    ]
+  }
+}

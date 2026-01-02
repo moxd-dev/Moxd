@@ -22,7 +22,7 @@ Task("Restore")
     .IsDependentOn("Clean")
     .Does(() =>
     {
-        DotNetRestore("Moxd.sln");
+        DotNetRestore("Moxd.Pack.slnf");
     });
 
 Task("Build")
@@ -36,7 +36,7 @@ Task("Build")
                            NoRestore = true,
                            MSBuildSettings = new DotNetMSBuildSettings().EnableBinaryLogger(binlogPath)
                        };
-        DotNetBuild("Moxd.sln", settings);
+        DotNetBuild("Moxd.Pack.slnf", settings);
     });
 
 Task("Pack")
@@ -44,7 +44,7 @@ Task("Pack")
     .Does(() =>
     {
         DotNetPack(
-            "Moxd.sln",
+            "Moxd.Pack.slnf",
             new DotNetPackSettings()
             {
                 Configuration = configuration,

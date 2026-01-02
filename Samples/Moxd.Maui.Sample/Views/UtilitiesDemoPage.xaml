@@ -4,9 +4,8 @@
              x:Class="Moxd.Maui.Sample.Views.UtilitiesDemoPage"
              Title="UtilitiesDemoPage">
     <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+        <Label Text="Welcome to .NET MAUI!"
+               VerticalOptions="Center"
+               HorizontalOptions="Center" />
     </VerticalStackLayout>
 </ContentPage>
