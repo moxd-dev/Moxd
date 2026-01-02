@@ -1,7 +1,12 @@
-﻿using Moxd.Extensions;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+
 using FluentAssertions;
+
+using Moxd.Extensions;
+using Moxd.Threading;
+
 using Xunit.Abstractions;
+
 using TaskExtensions = Moxd.Extensions.TaskExtensions;
 
 namespace Moxd.Maui.Core.Tests;
@@ -358,9 +363,10 @@ public class TaskExtensionsTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         int result = 0;
+        IDispatcher dispatcher = DispatcherHelper.CreateTestDispatcher();
 
         // Act
-        await TaskExtensions.RunAsync(async () =>
+        await TaskExtensions.RunAsync(dispatcher, async () =>
         {
             await Task.Delay(10);
             return 42;
@@ -377,9 +383,11 @@ public class TaskExtensionsTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         string result = "";
+        IDispatcher dispatcher = DispatcherHelper.CreateTestDispatcher();
 
         // Act
         await TaskExtensions.RunAsync(
+            dispatcher,
             () => "Hello World",
             value => result = value);
 
@@ -394,9 +402,11 @@ public class TaskExtensionsTests(ITestOutputHelper output) : TestBase(output)
         // Arrange
         bool backgroundExecuted = false;
         bool uiExecuted = false;
+        IDispatcher dispatcher = DispatcherHelper.CreateTestDispatcher();
 
         // Act
         await TaskExtensions.RunAsync(
+            dispatcher,
             async () =>
             {
                 await Task.Delay(10);
@@ -416,9 +426,11 @@ public class TaskExtensionsTests(ITestOutputHelper output) : TestBase(output)
         // Arrange
         bool backgroundExecuted = false;
         bool uiExecuted = false;
+        IDispatcher dispatcher = DispatcherHelper.CreateTestDispatcher();
 
         // Act
         await TaskExtensions.RunAsync(
+            dispatcher,
             () => backgroundExecuted = true,
             () => uiExecuted = true);
 
@@ -429,15 +441,16 @@ public class TaskExtensionsTests(ITestOutputHelper output) : TestBase(output)
     }
 
     [Fact]
-    public async Task RunAsync_WithCancellation_ThrowsOperationCanceledException()
+    public async Task RunAsync_WithCancellation_ThrowsTaskCanceledException()
     {
         // Arrange
         using CancellationTokenSource cts = new();
         cts.Cancel();
+        IDispatcher dispatcher = DispatcherHelper.CreateTestDispatcher();
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(async () => 
-            await TaskExtensions.RunAsync<int>(async () =>
+        await Assert.ThrowsAsync<TaskCanceledException>(async () => 
+            await TaskExtensions.RunAsync<int>(dispatcher, async () =>
             {
                 await Task.Delay(100, cts.Token);
                 return 42;
@@ -448,11 +461,24 @@ public class TaskExtensionsTests(ITestOutputHelper output) : TestBase(output)
     }
 
     [Fact]
-    public async Task RunAsync_NullBackgroundWork_ThrowsArgumentNullException()
+    public async Task RunAsync_NullDispatcher_ThrowsArgumentNullException()
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(async () => 
-            await TaskExtensions.RunAsync(null!, () => { }));
+            await TaskExtensions.RunAsync<int>(null!, async () => 42, _ => { }));
+
+        LogSuccess("RunAsync throws on null dispatcher");
+    }
+
+    [Fact]
+    public async Task RunAsync_NullBackgroundWork_ThrowsArgumentNullException()
+    {
+        // Arrange
+        IDispatcher dispatcher = DispatcherHelper.CreateTestDispatcher();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => 
+            await TaskExtensions.RunAsync(dispatcher, null!, () => { }));
 
         LogSuccess("RunAsync throws on null background work");
     }
@@ -460,9 +486,12 @@ public class TaskExtensionsTests(ITestOutputHelper output) : TestBase(output)
     [Fact]
     public async Task RunAsync_NullUIWork_ThrowsArgumentNullException()
     {
+        // Arrange
+        IDispatcher dispatcher = DispatcherHelper.CreateTestDispatcher();
+
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(async () => 
-            await TaskExtensions.RunAsync(() => 42, null!));
+            await TaskExtensions.RunAsync(dispatcher, () => 42, null!));
 
         LogSuccess("RunAsync throws on null UI work");
     }

@@ -1,9 +1,10 @@
 ﻿using Moxd.Guards;
+using Moxd.Threading;
 using Moxd.Collections.Reactive;
 using System.Collections;
+using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 
 namespace Moxd.Collections;
 
@@ -43,46 +44,12 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
     private readonly List<T> _sourceItems = [];
     private readonly HashSet<T> _filteredItems = [];
     private readonly ObservableRangeCollection<T> _internalCollection;
+    private readonly IDispatcher _dispatcher;
     private readonly Lock _lock = new();
 
     private Func<T, bool>? _filterPredicate;
     private IComparer<T>? _sortComparer;
     private bool _disposed;
-    #endregion
-
-    #region Constructors
-    /// <summary>
-    /// Creates an empty reactive collection.
-    /// </summary>
-    public ReactiveCollection()
-    {
-        _internalCollection = [];
-        View = new ReadOnlyObservableCollection<T>(_internalCollection);
-    }
-
-    /// <summary>
-    /// Creates a reactive collection with initial items.
-    /// </summary>
-    /// <param name="items">The initial items to load.</param>
-    /// <exception cref="ArgumentNullException">Thrown when items is null.</exception>
-    public ReactiveCollection(IEnumerable<T> items) : this()
-    {
-        Guard.IsNotNull(items);
-        Load(items);
-    }
-
-    /// <summary>
-    /// Creates a reactive collection with initial filter and sort.
-    /// </summary>
-    /// <param name="filter">Optional filter predicate.</param>
-    /// <param name="sortBy">Optional sort key selector.</param>
-    /// <param name="descending">Whether to sort in descending order.</param>
-    public ReactiveCollection(Func<T, bool>? filter, Func<T, object>? sortBy = null, bool descending = false) : this()
-    {
-        _filterPredicate = filter;
-        if (sortBy != null)
-            _sortComparer = CreateComparer(sortBy, descending);
-    }
     #endregion
 
     #region Properties
@@ -180,6 +147,49 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
     }
     #endregion
 
+    /// <summary>
+    /// Creates an empty reactive collection.
+    /// </summary>
+    /// <param name="dispatcher">
+    /// The dispatcher for UI thread marshaling. 
+    /// </param>
+    /// <exception cref="ArgumentNullException">Thrown when dispatcher is null.</exception>
+    public ReactiveCollection(IDispatcher dispatcher)
+    {
+        _dispatcher = Guard.IsNotNull(dispatcher);
+        _internalCollection = [];
+        View = new ReadOnlyObservableCollection<T>(_internalCollection);
+    }
+
+    /// <summary>
+    /// Creates a reactive collection with initial items.
+    /// </summary>
+    /// <param name="dispatcher">The dispatcher for UI thread marshaling.</param>
+    /// <param name="items">The initial items to load.</param>
+    /// <exception cref="ArgumentNullException">Thrown when dispatcher or items is null.</exception>
+    public ReactiveCollection(IDispatcher dispatcher, IEnumerable<T> items) 
+        : this(dispatcher)
+    {
+        Guard.IsNotNull(items);
+        Load(items);
+    }
+
+    /// <summary>
+    /// Creates a reactive collection with initial filter and/or sort.
+    /// </summary>
+    /// <param name="dispatcher">The dispatcher for UI thread marshaling.</param>
+    /// <param name="filter">Optional filter predicate.</param>
+    /// <param name="sortBy">Optional sort key selector.</param>
+    /// <param name="descending">Whether to sort in descending order.</param>
+    /// <exception cref="ArgumentNullException">Thrown when dispatcher is null.</exception>
+    public ReactiveCollection(IDispatcher dispatcher, Func<T, bool>? filter, Func<T, object>? sortBy = null, bool descending = false) 
+        : this(dispatcher)
+    {
+        _filterPredicate = filter;
+        if (sortBy != null)
+            _sortComparer = CreateComparer(sortBy, descending);
+    }
+
     #region Data Operations
     /// <summary>
     /// Loads items, replacing all existing items.
@@ -255,7 +265,7 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
             insertIndex = FindInsertIndex(item);
         }
 
-        InvokeOnMainThread(() => _internalCollection.Insert(insertIndex, item));
+        DispatchToUI(() => _internalCollection.Insert(insertIndex, item));
     }
 
     /// <summary>
@@ -316,7 +326,7 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
                 return true;
         }
 
-        InvokeOnMainThread(() =>
+        DispatchToUI(() =>
         {
             if (removeIndex < _internalCollection.Count)
                 _internalCollection.RemoveAt(removeIndex);
@@ -357,7 +367,7 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
         }
 
         if (toRemoveFromView.Count > 0)
-            InvokeOnMainThread(() => _internalCollection.RemoveRange(toRemoveFromView));
+            DispatchToUI(() => _internalCollection.RemoveRange(toRemoveFromView));
 
         return removedCount;
     }
@@ -373,7 +383,7 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
             _filteredItems.Clear();
         }
 
-        InvokeOnMainThread(_internalCollection.Clear);
+        DispatchToUI(_internalCollection.Clear);
     }
 
     /// <summary>
@@ -551,7 +561,7 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
         }
 
         // Use ReplaceRange for efficient batch update with single Reset notification
-        InvokeOnMainThread(() => _internalCollection.ReplaceRange(newViewItems));
+        DispatchToUI(() => _internalCollection.ReplaceRange(newViewItems));
 
         OnPropertyChanged(nameof(Count));
         OnPropertyChanged(nameof(SourceCount));
@@ -603,12 +613,12 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
             // If many moves (>33%), just replace (more efficient)
             if (changes.Moves > _internalCollection.Count / 3)
             {
-                InvokeOnMainThread(() => _internalCollection.ReplaceRange(sorted));
+                DispatchToUI(() => _internalCollection.ReplaceRange(sorted));
             }
             else
             {
                 // Apply individual moves for smoother animation
-                InvokeOnMainThread(() =>
+                DispatchToUI(() =>
                 {
                     foreach (Change<T> change in changes)
                     {
@@ -671,7 +681,7 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
         // Apply change on UI thread
         if (changeType == ChangeReason.Remove && oldIndex >= 0)
         {
-            InvokeOnMainThread(() =>
+            DispatchToUI(() =>
             {
                 if (oldIndex < _internalCollection.Count)
                     _internalCollection.RemoveAt(oldIndex);
@@ -679,11 +689,11 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
         }
         else if (changeType == ChangeReason.Add && newIndex >= 0)
         {
-            InvokeOnMainThread(() => _internalCollection.Insert(newIndex, item));
+            DispatchToUI(() => _internalCollection.Insert(newIndex, item));
         }
         else if (changeType == ChangeReason.Move && oldIndex >= 0 && newIndex >= 0)
         {
-            InvokeOnMainThread(() => _internalCollection.Move(oldIndex, newIndex));
+            DispatchToUI(() => _internalCollection.Move(oldIndex, newIndex));
         }
     }
 
@@ -739,6 +749,19 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
     }
 
     /// <summary>
+    /// Dispatches an action to the UI thread using the injected dispatcher.
+    /// </summary>
+    private void DispatchToUI(Action action)
+    {
+        if (_disposed)
+            return;
+
+        DispatcherHelper.Dispatch(_dispatcher, action);
+    }
+    #endregion
+
+    #region Private Static Methods
+    /// <summary>
     /// Creates a comparer from a key selector.
     /// </summary>
     private static Comparer<T> CreateComparer(Func<T, object> keySelector, bool descending)
@@ -750,20 +773,6 @@ public sealed class ReactiveCollection<T> : IReadOnlyList<T>, INotifyCollectionC
             int result = Comparer<object>.Default.Compare(keyA, keyB);
             return descending ? -result : result;
         });
-    }
-
-    /// <summary>
-    /// Invokes an action on the main thread.
-    /// </summary>
-    private void InvokeOnMainThread(Action action)
-    {
-        if (_disposed)
-            return;
-
-        if (MainThread.IsMainThread)
-            action();
-        else
-            MainThread.BeginInvokeOnMainThread(action);
     }
     #endregion
 }

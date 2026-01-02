@@ -1,14 +1,22 @@
-﻿using Moxd.Collections;
+﻿using Moxd.Threading;
+using Moxd.Collections;
 using Moxd.Maui.Core.Tests.Models;
 
 namespace Moxd.Maui.Core.Tests;
 
 public class ReactiveCollectionTests
 {
+    private readonly IDispatcher _dispatcher;
+
+    public ReactiveCollectionTests()
+    {
+        _dispatcher = DispatcherHelper.CreateTestDispatcher();
+    }
+
     [Fact]
     public void Constructor_Default_CreatesEmptyCollection()
     {
-        ReactiveCollection<string> collection = [];
+        ReactiveCollection<string> collection = new(_dispatcher);
 
         Assert.Empty(collection);
         Assert.Equal(0, collection.SourceCount);
@@ -18,7 +26,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Constructor_Default_ViewIsReadOnly()
     {
-        ReactiveCollection<string> collection = [];
+        ReactiveCollection<string> collection = new(_dispatcher);
         // View should be ReadOnlyObservableCollection
         Assert.IsType<System.Collections.ObjectModel.ReadOnlyObservableCollection<string>>(collection.View);
     }
@@ -28,7 +36,7 @@ public class ReactiveCollectionTests
     {
         string[] items = ["A", "B", "C"];
 
-        ReactiveCollection<string> collection = [.. items];
+        ReactiveCollection<string> collection = new(_dispatcher, items);
 
         Assert.Equal(3, collection.Count);
         Assert.Equal(3, collection.SourceCount);
@@ -44,6 +52,7 @@ public class ReactiveCollectionTests
     public void Constructor_WithFilterAndSort_AppliesOnLoad()
     {
         ReactiveCollection<int> collection = new(
+            _dispatcher,
             filter: x => x > 5,
             sortBy: x => x,
             descending: true);
@@ -60,7 +69,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Load_ReplacesExistingItems()
     {
-        ReactiveCollection<string> collection = ["A", "B"];
+        ReactiveCollection<string> collection = new(_dispatcher, ["A", "B"]);
 
         collection.Load(["X", "Y", "Z"]);
 
@@ -72,7 +81,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Load_WithFilter_AppliesFilter()
     {
-        ReactiveCollection<int> collection = [];
+        ReactiveCollection<int> collection = new(_dispatcher);
         collection.Filter(x => x % 2 == 0);
 
         collection.Load([1, 2, 3, 4, 5, 6]);
@@ -85,7 +94,7 @@ public class ReactiveCollectionTests
     [Fact]
     public async Task LoadAsync_WithAsyncFetch_LoadsItems()
     {
-        ReactiveCollection<string> collection = [];
+        ReactiveCollection<string> collection = new(_dispatcher);
 
         await collection.LoadAsync(async () =>
         {
@@ -99,7 +108,7 @@ public class ReactiveCollectionTests
     [Fact]
     public async Task LoadAsync_WithSyncFetch_LoadsItems()
     {
-        ReactiveCollection<string> collection = [];
+        ReactiveCollection<string> collection = new(_dispatcher);
 
         await collection.LoadAsync(() => ["X", "Y"]);
 
@@ -109,9 +118,10 @@ public class ReactiveCollectionTests
     [Fact]
     public void Add_SingleItem_AddsToCollection()
     {
-        ReactiveCollection<string> collection = [];
-
-        collection.Add("Test");
+        ReactiveCollection<string> collection = new(_dispatcher)
+        {
+            "Test"
+        };
 
         Assert.Single(collection);
         Assert.Contains("Test", collection);
@@ -120,7 +130,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Add_WithFilter_OnlyAddsPassingItems()
     {
-        ReactiveCollection<int> collection = [];
+        ReactiveCollection<int> collection = new(_dispatcher);
         collection.Filter(x => x > 5);
 
         collection.Add(3);
@@ -134,7 +144,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Add_WithSort_InsertsAtCorrectPosition()
     {
-        ReactiveCollection<int> collection = [];
+        ReactiveCollection<int> collection = new(_dispatcher);
         collection.Sort(x => x);
 
         collection.Add(5);
@@ -151,7 +161,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void AddRange_MultipleItems_AddsAll()
     {
-        ReactiveCollection<string> collection = [];
+        ReactiveCollection<string> collection = new(_dispatcher);
 
         collection.AddRange(["A", "B", "C"]);
 
@@ -161,7 +171,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void AddRange_EmptyCollection_NoOp()
     {
-        ReactiveCollection<string> collection = new(["X"]);
+        ReactiveCollection<string> collection = new(_dispatcher, ["X"]);
 
         collection.AddRange([]);
 
@@ -171,7 +181,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Remove_ExistingItem_ReturnsTrue()
     {
-        ReactiveCollection<string> collection = ["A", "B", "C"];
+        ReactiveCollection<string> collection = new(_dispatcher, ["A", "B", "C"]);
 
         bool result = collection.Remove("B");
 
@@ -183,7 +193,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Remove_NonExistingItem_ReturnsFalse()
     {
-        ReactiveCollection<string> collection = ["A", "B"];
+        ReactiveCollection<string> collection = new(_dispatcher, ["A", "B"]);
 
         bool result = collection.Remove("X");
 
@@ -194,7 +204,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Remove_FilteredOutItem_RemovesFromSource()
     {
-        ReactiveCollection<int> collection = [1, 2, 3, 4, 5];
+        ReactiveCollection<int> collection = new(_dispatcher, [1, 2, 3, 4, 5]);
         collection.Filter(x => x > 3);
 
         // 1 is in source but filtered out
@@ -207,7 +217,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void RemoveWhere_MatchingItems_RemovesAll()
     {
-        ReactiveCollection<int> collection = [1, 2, 3, 4, 5, 6];
+        ReactiveCollection<int> collection = new(_dispatcher, [1, 2, 3, 4, 5, 6]);
 
         int removed = collection.RemoveWhere(x => x % 2 == 0);
 
@@ -219,7 +229,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void RemoveWhere_NoMatches_ReturnsZero()
     {
-        ReactiveCollection<int> collection = [1, 3, 5];
+        ReactiveCollection<int> collection = new(_dispatcher, [1, 3, 5]);
 
         int removed = collection.RemoveWhere(x => x % 2 == 0);
 
@@ -230,7 +240,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Clear_RemovesAllItems()
     {
-        ReactiveCollection<string> collection = ["A", "B", "C"];
+        ReactiveCollection<string> collection = new(_dispatcher, ["A", "B", "C"]);
 
         collection.Clear();
 
@@ -241,7 +251,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Filter_AppliesPredicate()
     {
-        ReactiveCollection<int> collection = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        ReactiveCollection<int> collection = new(_dispatcher, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
         collection.Filter(x => x > 5);
 
@@ -253,7 +263,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Filter_Change_RebuildsView()
     {
-        ReactiveCollection<int> collection = [1, 2, 3, 4, 5];
+        ReactiveCollection<int> collection = new(_dispatcher, [1, 2, 3, 4, 5]);
         collection.Filter(x => x > 3);
 
         Assert.Equal(2, collection.Count);
@@ -268,7 +278,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void ClearFilter_ShowsAllItems()
     {
-        ReactiveCollection<int> collection = [1, 2, 3, 4, 5];
+        ReactiveCollection<int> collection = new(_dispatcher, [1, 2, 3, 4, 5]);
         collection.Filter(x => x > 3);
 
         collection.ClearFilter();
@@ -286,7 +296,7 @@ public class ReactiveCollectionTests
             new Product { Id = 2, Name = "Gadget", IsActive = false },
             new Product { Id = 3, Name = "Thing", IsActive = true }
         ];
-        ReactiveCollection<Product> collection = [.. products];
+        ReactiveCollection<Product> collection = new(_dispatcher, products);
 
         collection.Filter(p => p.IsActive);
 
@@ -297,7 +307,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Sort_ByKey_SortsAscending()
     {
-        ReactiveCollection<int> collection = [5, 3, 8, 1, 9];
+        ReactiveCollection<int> collection = new(_dispatcher, [5, 3, 8, 1, 9]);
 
         collection.Sort(x => x);
 
@@ -308,7 +318,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Sort_Descending_SortsDescending()
     {
-        ReactiveCollection<int> collection = [5, 3, 8, 1, 9];
+        ReactiveCollection<int> collection = new(_dispatcher, [5, 3, 8, 1, 9]);
 
         collection.Sort(x => x, descending: true);
 
@@ -318,7 +328,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Sort_WithComparer_UsesComparer()
     {
-        ReactiveCollection<string> collection = ["banana", "Apple", "cherry"];
+        ReactiveCollection<string> collection = new(_dispatcher, ["banana", "Apple", "cherry"]);
 
         collection.Sort(StringComparer.OrdinalIgnoreCase);
 
@@ -330,7 +340,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void ClearSort_ReturnsToSourceOrder()
     {
-        ReactiveCollection<int> collection = [5, 3, 8, 1, 9];
+        ReactiveCollection<int> collection = new(_dispatcher, [5, 3, 8, 1, 9]);
         collection.Sort(x => x);
 
         collection.ClearSort();
@@ -348,7 +358,7 @@ public class ReactiveCollectionTests
             new Product { Id = 2, Name = "Gadget", Price = 19.99m },
             new Product { Id = 3, Name = "Thing", Price = 39.99m }
         ];
-        ReactiveCollection<Product> collection = [.. products];
+        ReactiveCollection<Product> collection = new(_dispatcher, products);
 
         collection.Sort(p => p.Price);
 
@@ -367,7 +377,7 @@ public class ReactiveCollectionTests
             new Product { Id = 3, Name = "C", Price = 20, IsActive = true },
             new Product { Id = 4, Name = "D", Price = 40, IsActive = true }
         ];
-        ReactiveCollection<Product> collection = [.. products];
+        ReactiveCollection<Product> collection = new(_dispatcher, products);
 
         collection.Filter(p => p.IsActive);
         collection.Sort(p => p.Price);
@@ -382,7 +392,7 @@ public class ReactiveCollectionTests
     public void Refresh_ItemNowPassesFilter_AddsToView()
     {
         Product product = new() { Id = 1, Name = "Test", IsActive = false };
-        ReactiveCollection<Product> collection = [product];
+        ReactiveCollection<Product> collection = new(_dispatcher, [product]);
         collection.Filter(p => p.IsActive);
 
         Assert.Empty(collection);
@@ -397,7 +407,7 @@ public class ReactiveCollectionTests
     public void Refresh_ItemNoLongerPassesFilter_RemovesFromView()
     {
         Product product = new() { Id = 1, Name = "Test", IsActive = true };
-        ReactiveCollection<Product> collection = [product];
+        ReactiveCollection<Product> collection = new(_dispatcher, [product]);
         collection.Filter(p => p.IsActive);
 
         Assert.Single(collection);
@@ -411,7 +421,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Refresh_ItemNotInSource_NoOp()
     {
-        ReactiveCollection<Product> collection = [new Product { Id = 1, Name = "A" }];
+        ReactiveCollection<Product> collection = new(_dispatcher, [new Product { Id = 1, Name = "A" }]);
 
         Product otherProduct = new() { Id = 99, Name = "Other" };
 
@@ -430,7 +440,7 @@ public class ReactiveCollectionTests
             new Product { Id = 2, Name = "B", Price = 20 }
         ];
 
-        ReactiveCollection<Product> collection = [.. products];
+        ReactiveCollection<Product> collection = new(_dispatcher, products);
         collection.Sort(p => p.Price);
 
         // Modify without refresh
@@ -446,7 +456,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void GetEnumerator_ReturnsViewItems()
     {
-        ReactiveCollection<string> collection = ["A", "B", "C"];
+        ReactiveCollection<string> collection = new(_dispatcher, ["A", "B", "C"]);
 
         List<string> items = [.. collection];
 
@@ -459,7 +469,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Indexer_ReturnsCorrectItem()
     {
-        ReactiveCollection<string> collection = ["A", "B", "C"];
+        ReactiveCollection<string> collection = new(_dispatcher, ["A", "B", "C"]);
 
         Assert.Equal("A", collection[0]);
         Assert.Equal("B", collection[1]);
@@ -469,7 +479,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Dispose_ClearsCollections()
     {
-        ReactiveCollection<string> collection = ["A", "B", "C"];
+        ReactiveCollection<string> collection = new(_dispatcher, ["A", "B", "C"]);
 
         collection.Dispose();
 
@@ -479,7 +489,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Dispose_MultipleCallsSafe()
     {
-        ReactiveCollection<string> collection = [];
+        ReactiveCollection<string> collection = new(_dispatcher);
         collection.Dispose();
         collection.Dispose(); // Should not throw
     }
@@ -487,7 +497,7 @@ public class ReactiveCollectionTests
     [Fact]
     public void Load_RaisesPropertyChangedForCount()
     {
-        ReactiveCollection<string> collection = [];
+        ReactiveCollection<string> collection = new(_dispatcher);
         List<string> changedProperties = [];
 
         collection.PropertyChanged += (s, e) => changedProperties.Add(e.PropertyName!);
