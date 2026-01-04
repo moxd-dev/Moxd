@@ -1,31 +1,19 @@
 ﻿# Moxd Development
 
-<p align="center">
-  <img src="./Images/Logo.png" alt="Moxd Logo" width="200"/>
-</p>
+![Moxd Logo](./Images/Logo.png)
 
-<p align="center">
-  <strong>High-quality .NET MAUI libraries for building exceptional cross-platform applications</strong>
-</p>
-
-<p align="center">
-  <a href="#packages">Packages</a> •
-  <a href="#getting-started">Getting Started</a> •
-  <a href="#documentation">Documentation</a> •
-  <a href="#contributing">Contributing</a> •
-  <a href="#license">License</a>
-</p>
+**High-quality .NET MAUI libraries for building exceptional cross-platform applications**
 
 ---
 
-## About Moxd Development
+## About
 
 Moxd Development provides production-ready libraries, controls, and utilities for .NET MAUI developers. Our goal is to solve common pain points in cross-platform development with clean, performant, and well-documented solutions.
 
 ### What We Offer
 
 - **Performance Utilities** — Thread-safe collections, async helpers, and optimized data handling
-- **UI Controls** — Custom layouts, controls, and behaviors for MAUI applications
+- **UI Controls** — Custom layouts, controls, and behaviors for MAUI applications  
 - **Platform Extensions** — Platform-specific functionality made easy
 - **Best Practices** — Clean architecture patterns and reusable components
 
@@ -41,33 +29,15 @@ Moxd Development provides production-ready libraries, controls, and utilities fo
 
 ---
 
-## Getting Started
+## Installation
 
-### Installation
+Install via the .NET CLI:
 
-```bash
+```
 dotnet add package Moxd.Maui.Core
 ```
 
-### Quick Example
-
-```csharp
-using Moxd.Collections;
-
-public class ProductsViewModel
-{
-    public ReactiveCollection<Product> Products { get; } = new();
-
-    public async Task LoadAsync()
-    {
-        var items = await _service.GetProductsAsync();
-        Products.Load(items);
-    }
-
-    public void Search(string text) => Products.Filter(p => p.Name.Contains(text));
-    public void SortByPrice() => Products.Sort(p => p.Price);
-}
-```
+Or search for **Moxd.Maui.Core** in the NuGet Package Manager.
 
 ---
 
@@ -75,29 +45,41 @@ public class ProductsViewModel
 
 Detailed documentation for each package:
 
-- [**Moxd.Maui.Core**](docs/Core.md) — Collections, threading, guards, and extensions
+| Package | Documentation |
+|---------|---------------|
+| Moxd.Maui.Core | [View Documentation](https://moxd-dev.github.io/Moxd/) |
 
 ---
 
 ## Requirements
 
 - .NET 9.0 or later
-- .NET MAUI workload
+- .NET MAUI workload installed
+
+---
+
+## Support the Project
+
+If you find these libraries useful, consider supporting the project:
+
+[![PayPal](https://img.shields.io/badge/PayPal-00457C?style=flat&logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=96P8LE2YA56RU)
+
+Your support helps maintain and improve these libraries!
 
 ---
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Whether it's bug reports, feature requests, or pull requests, all contributions are appreciated.
+
+See our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-<p align="center">
-  Made with ❤️ by <a href="https://github.com/moxd-development">Moxd Development</a>
-</p>
+**Made with ❤️ by [Moxd Development](https://github.com/moxd-dev)**
