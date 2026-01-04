@@ -1,6 +1,6 @@
 ﻿# Moxd Development
 
-![Moxd Logo](./Images/Logo.png)
+![Moxd Logo](https://raw.githubusercontent.com/moxd-dev/Moxd/master/Images/Logo.png)
 
 **High-quality .NET MAUI libraries for building exceptional cross-platform applications**
 
